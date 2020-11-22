@@ -22,11 +22,9 @@ class FalconTools
 	void sendGlobalMessage(string message) {
 		GetGame().GetPlayers(players);
 		
-		Print(players);
-		
 		foreach (Man player : players) {
 			if( player )
-				sendMessageToPlayer(PlayerBase.Cast(player), message);
+				sendMessageToPlayer(PlayerBase.Cast(player), "[Server Message] " + message);
 		}
 	}
 	
@@ -89,9 +87,51 @@ class FalconTools
 				break;
 			}
 			
+			//Temporary not working
+			/*case "inv": {
+				if (count != 2) {
+					
+					switch(tokens[1]) {
+						
+						case "on": {
+							player.ClearFlags(EntityFlags.VISIBLE|EntityFlags.SOLID, true );
+							sendMessageToPlayer(player, "inv on"); 
+							break;
+						}
+							
+						case "off": {
+							player.SetFlags(EntityFlags.VISIBLE|EntityFlags.SOLID, true);
+							sendMessageToPlayer(player, "inv off"); 
+							break;
+						}
+							
+						default: {
+							return;
+						}
+						break;
+					}
+			  	}					
+			}*/
+
 			case "kys": {
 				player.SetHealth(0);
 				break;
+			}
+					
+			case "kill": {
+				if(count != 2) { 
+					return; 
+				}
+				GetGame().GetPlayers(players);
+				
+                target_player = FalconUtils.GetPlayer(tokens[1], players);
+                if(target_player == NULL) {
+					sendMessageToPlayer(player, "Cant find player " + target_player);
+					return;
+                } else {
+                    target_player.SetHealth(0);
+                }
+                break;
 			}
 			
 			case "pos": {
@@ -182,7 +222,7 @@ class FalconTools
 					GetGame().GetPlayers(players);
 					target = FalconUtils.GetPlayer(tokens[1], players);
                     if(target == NULL) {
-						sendMessageToPlayer(player, "Cant find player " + target_player);
+						sendMessageToPlayer(player, "Cant find player " + tokens[1]);
                         return;
                     } else {
                         healPlayer(target);
@@ -209,19 +249,24 @@ class FalconTools
 			}
 			
 			case "strip": {
-				if (count != 2) {
+				if (count == 1) {
+					player.RemoveAllItems();
+				}
+				else if (count == 2) {
+					GetGame().GetPlayers(players);
+					
+					target_player = FalconUtils.GetPlayer(tokens[1], players);
+					
+					if (target_player == NULL) {
+						sendMessageToPlayer(player, "Cant find player " + tokens[1]);
+						return;
+					}
+					
+					target_player.RemoveAllItems();
+				}
+				else {
 					return;
 				}
-				GetGame().GetPlayers(players);
-				
-				target_player = FalconUtils.GetPlayer(tokens[1], players);
-				
-				if (target_player == NULL) {
-					sendMessageToPlayer(player, "Cant find player " + target_player);
-					return;
-				}
-				
-				target_player.RemoveAllItems();
 				
 				break;
 			}

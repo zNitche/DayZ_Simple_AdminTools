@@ -26,6 +26,7 @@ modded class MissionServer
         param0 = tokens.Get(0);
         param0.ParseStringEx(prefix); 
 		
+		
 		if(prefix != cmdPrefix) {
 			//Idk if it is needed or not
 			//super.OnEvent(eventTypeId, params);
